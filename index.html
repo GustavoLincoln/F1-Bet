@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogo de Apostas em Corridas F1</title>
+  <img src="background-flag.jpg" style="opacity: 0.2; position: fixed; z-index: -10;">
+  <style>
+    body {
+      background-color: #1b0000;
+      color: #FFF;
+    }
+
+    .container {
+      position: relative;
+      width: 100%;
+      height: 448px;
+      overflow: hidden;
+      background-color: #5a5a5a;
+      background-image: url('pista.jpg');
+    }
+
+    .car {
+      position: absolute;
+      top: 0;
+      transition: left 0.5s;
+      -webkit-transform: rotate(90deg) scaleY(-1);
+      -ms-transform: rotate(90deg) scaleY(-1);
+      transform: rotate(90deg) scaleY(-1);
+    }
+
+    .car:nth-child(2) {
+      /* background-color: #f00; */
+      top: 60px;
+    }
+
+    .car:nth-child(3) {
+      /* background-color: #0f0; */
+      top: 120px;
+    }
+
+    .car:nth-child(4) {
+      /* background-color: #00f; */
+      top: 180px;
+    }
+
+    .car:nth-child(5) {
+      /* background-color: #ff0; */
+      top: 240px;
+    }
+
+    .winner {
+      color: #f00;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <div style="display: flex; justify-content: start; align-items: center;">
+    <img src="F1-logo.png" style="height: 90px;">
+    <h1>Bet - UP</h1>
+  </div>
+  
+  
+  <div class="container">
+    <!-- <div class="stars"></div> -->
+    <div class="car" id="1">
+      <img src="ferrari.svg" alt="Carro 1" width="50px">
+    </div>
+    <div class="car" id="2">
+      <img src="honda.svg" alt="Carro 2" width="50px">
+    </div>
+    <div class="car" id="3">
+      <img src="redbull.svg" alt="Carro 3" width="50px">
+    </div>
+    <div class="car" id="4">
+      <img src="mclaren.svg" alt="Carro 4" width="50px">
+    </div>
+    <div class="car" id="5">
+      <img src="williams.svg" alt="Carro 5" width="50px">
+    </div>
+  </div>
+  <h2>Balance: R$<span id="balance">100</span></h2>
+  <form id="betForm">
+    <label for="bet">Bet value:</label>
+    <input type="number" id="bet" name="bet" min="5" max="100" required>
+    <label for="driver">Piloto:</label>
+    <select id="driver" name="driver">
+      <option value="1">Ferrari</option>
+      <option value="2">Honda</option>
+      <option value="3">RedBull</option>
+      <option value="4">Mclaren</option>
+      <option value="5">Williams</option>
+    </select>
+    <button type="submit">Start Race</button>
+  </form>
+  <img id="winImage" src="win_image.jpg" alt="Vitória" style="display: none;">
+  <img id="loseImage" src="lose_image.jpg" alt="Derrota" style="display: none;">
+
+  <script>
+
+    // function init() {
+    const balance = document.getElementById('balance');
+    const betForm = document.getElementById('betForm');
+
+    const ferrari = document.getElementById('1');
+    const honda = document.getElementById('2');
+    const redbull = document.getElementById('3');
+    const mclaren = document.getElementById('4');
+    const williams = document.getElementById('5');
+    // }
+
+    const carros = [ferrari, honda, redbull, mclaren, williams];
+
+    console.log(carros)
+
+    let balanceValue = 100;
+
+    betForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const bet = document.getElementById('bet');
+      const driver = document.getElementById('driver');
+      if (bet.value > balanceValue) {
+        alert('Saldo insuficiente.');
+        return;
+      }
+      balanceValue -= bet.value;
+      balance.textContent = balanceValue;
+      console.log("Piloto", driver.value)
+      startRace();
+    });
+
+    function startRace() {
+      const cars = document.getElementsByClassName('car');
+      let positions = Array.from(cars).map((car, i) => ({
+        car,
+        position: 0,
+        speed: Math.floor(Math.random() * 15) + 1
+      }));
+      let interval = setInterval(() => {
+        positions = positions.map(({ car, position, speed }) => {
+          car.style.left = `${position}px`;
+          position += speed;
+
+          if (position > window.innerWidth) {
+
+            clearInterval(interval);
+            car.classList.add('winner');
+            alert(`Winner ${car.id}!`, resetPositions());
+
+            const driver = document.getElementById('driver');
+            const bet = parseInt(document.getElementById('bet').value);
+            const betDriver = parseInt(driver.value);
+
+            if (betDriver === parseInt(car.id)) {
+              
+              balanceValue += bet * 2; 
+              balance.textContent = balanceValue;
+              document.getElementById('winImage').style.display = 'block'; 
+              document.getElementById('loseImage').style.display = 'none'; 
+
+            } else {
+              document.getElementById('winImage').style.display = 'none'; 
+              document.getElementById('loseImage').style.display = 'block';
+            }
+            resetPositions();
+          }
+          return { car, position, speed };
+        });
+      }, 50);
+    }
+
+    function resetPositions() {
+      const cars = document.getElementsByClassName('car');
+      for (let i = 0; i < cars.length; i++) {
+        cars[i].style.left = '0px';
+        cars[i].classList.remove('winner');
+      }
+    }
+  </script>
+</body>
+
+</html>
