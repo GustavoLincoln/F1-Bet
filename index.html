@@ -54,16 +54,26 @@
       color: #f00;
       font-weight: bold;
     }
+
+    #loader {
+      position: fixed;
+      width: 100%;
+      height: 100vh;
+      background: #21242d url('ferrari-sf23.gif') no-repeat center;
+      z-index: 999;
+    }
   </style>
 </head>
 
 <body>
+  <div id="loader">
+  </div>
   <div style="display: flex; justify-content: start; align-items: center;">
     <img src="F1-logo.png" style="height: 90px;">
     <h1>Bet - UP</h1>
   </div>
-  
-  
+
+
   <div class="container">
     <!-- <div class="stars"></div> -->
     <div class="car" id="1">
@@ -100,6 +110,13 @@
   <img id="loseImage" src="lose_image.jpg" alt="Derrota" style="display: none;">
 
   <script>
+
+    var preloader = document.getElementById('loader');
+    function preLoaderHandler() {
+      preloader.style.display = 'none';
+    }
+
+    const myTimeout = setTimeout(preLoaderHandler, 5000);
 
     // function init() {
     const balance = document.getElementById('balance');
@@ -155,14 +172,14 @@
             const betDriver = parseInt(driver.value);
 
             if (betDriver === parseInt(car.id)) {
-              
-              balanceValue += bet * 2; 
+
+              balanceValue += bet * 2;
               balance.textContent = balanceValue;
-              document.getElementById('winImage').style.display = 'block'; 
-              document.getElementById('loseImage').style.display = 'none'; 
+              document.getElementById('winImage').style.display = 'block';
+              document.getElementById('loseImage').style.display = 'none';
 
             } else {
-              document.getElementById('winImage').style.display = 'none'; 
+              document.getElementById('winImage').style.display = 'none';
               document.getElementById('loseImage').style.display = 'block';
             }
             resetPositions();
